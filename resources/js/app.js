@@ -20,6 +20,8 @@ const router = VueRouter.createRouter({
 
 const app = createApp({})
 
+window.url = '/todo_app/public/'
+
 app.use(router)
 
 app.mount('#app')
