@@ -6,6 +6,8 @@ import * as VueRouter from 'vue-router'
 import HomeComponent from './components/HomeComponent.vue'
 import TaskComponent from './components/TaskComponent.vue'
 
+import LoaderComponent from './components/LoaderComponent.vue'
+
 const routes = [
     {path: '/', component: HomeComponent},
     {path: '/tasks', component: TaskComponent},
@@ -21,6 +23,11 @@ const router = VueRouter.createRouter({
 const app = createApp({})
 
 window.url = '/todo_app/public/'
+
+var Emitter = require('tiny-emitter')
+window.emitter = new Emitter()
+
+app.component('loader-component', LoaderComponent)
 
 app.use(router)
 

@@ -15,4 +15,9 @@ class Task extends Model
         'time',
         'detail',
     ];
+
+    public function sub_tasks()
+    {
+        return $this->hasMany('App\Models\SubTask');
+    }
 }

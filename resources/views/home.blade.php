@@ -14,6 +14,7 @@
 
 <body class="antialiased">
     <div id="app">
+        <loader-component></loader-component>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
                 <a class="navbar-brand" href="#">Todo SPA</a>
