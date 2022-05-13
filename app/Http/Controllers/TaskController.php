@@ -8,6 +8,11 @@ use App\Models\SubTask;
 
 class TaskController extends Controller
 {
+    public function __construct()
+    {
+        return $this->middleware('auth:api');
+    }
+
     public function getTasks()
     {
         return response()->json(Task::latest()->with('sub_tasks')->get());

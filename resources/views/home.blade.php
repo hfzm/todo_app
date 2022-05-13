@@ -31,6 +31,17 @@
                             <router-link class="nav-link" to="/tasks">Tasks</router-link>
                         </li>
                     </ul>
+                    <ul class="navbar-nav float-end mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a href="{{route('logout')}}" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Logout
+                            </a>
+
+                            <form id="logout-form" action="{{route('logout')}}" method="POST">
+                                @csrf
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

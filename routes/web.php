@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('home');
-});
+})->middleware('auth');
 
 Route::get('{any?}', function() {
     return view('home');
-})->where('any', '.*');
+})->where('any', '.*')->middleware('auth');
