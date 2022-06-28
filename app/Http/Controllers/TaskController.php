@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\SubTask;
+use Image;
 
 class TaskController extends Controller
 {
@@ -21,11 +22,20 @@ class TaskController extends Controller
 
     public function storeTask(Request $request)
     {
+        if($request->task_file) {
+            $task_file = time() . '.' . explode('/', explode(':', substr($request->task_file, 0, strpos($request->task_file, ';')))[1])[1];
+
+            Image::make($request->task_file)->save(public_path('images/tasks/' . $task_file));
+        }else{
+            $task_file = null;
+        }
+
         Task::create([
             'title'         => $request->title,
             'date'          => $request->date,
             'time'          => $request->time,
             'detail'        => $request->detail,
+            'task_file'     => $task_file,
         ]);
 
         return response()->json('Task stored successfully!');

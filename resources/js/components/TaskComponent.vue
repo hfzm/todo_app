@@ -27,6 +27,7 @@
                                     <th>Title</th>
                                     <th>Date & Time</th>
                                     <th>Detail</th>
+                                    <th>Task File</th>
                                     <th>Sub Tasks Count</th>
                                     <th>Sub Tasks</th>
                                     <th v-if="roles.has('admin') || roles.has('manager')">Actions</th>
@@ -39,6 +40,14 @@
                                     <td>{{task.date}} | {{task.time}}</td>
                                     <td>
                                         {{task.detail.length <= 10 ? task.detail : task.detail.substr(0, 10) + '...'}}
+                                    </td>
+                                    <td>
+                                        <a :href="`${url}${task.task_file}`" target="_blank" v-show="task.task_file">
+                                            <img :src="`${url}${task.task_file}`" alt="task_file" width="100">
+                                        </a>
+                                        <p v-show="!task.task_file">
+                                            ...
+                                        </p>
                                     </td>
                                     <td>
                                         <span :class="`badge ${task.sub_tasks.length == 0 ? 'bg-warning' : 'bg-success'} text-dark`">
@@ -99,6 +108,15 @@
                     <div class="form-group">
                         <label for="detail">Detail</label>
                         <textarea class="form-control" rows="3" v-model="taskData.detail"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="task_file">Task File</label>
+                        <input type="file" id="task_file" class="form-control" @change="selectedTaskFile">
                     </div>
                 </div>
             </div>
@@ -233,6 +251,7 @@ export default {
     }),
     data() {
         return {
+            url: window.url + 'images/tasks/',
             editMode: false,
             subEditMode: false,
             deleteMode: false,
@@ -242,6 +261,7 @@ export default {
                 date: '',
                 time: '',
                 detail: '',
+                task_file: '',
             },
             taskErrors: {
                 title: false,
@@ -261,10 +281,6 @@ export default {
         this.getTasks()
     },
     created() {
-        console.log(window.user)
-        console.log(window.user_roles)
-        console.log(window.user_permissions)
-
         this.current_user = window.user
 
         window.user_roles.forEach(r => {
@@ -344,7 +360,11 @@ export default {
                 date: '',
                 time: '',
                 detail: '',
+                task_file: '',
             }
+
+            document.querySelector('#task_file').value = '';
+
             this.taskErrors = {
                 title: false,
                 date: false,
@@ -360,12 +380,21 @@ export default {
             if(this.taskData.title && this.taskData.date && this.taskData.time) {
                 axios.post(window.url + 'api/storeTask', this.taskData).then(response => {
                     this.getTasks()
+                    console.log(response.data);
                 }).catch(errors => {
                     console.log(errors)
                 }).finally(() => {
                     $('#taskModal').modal('hide')
                 });
             }
+        },
+        selectedTaskFile(e) {
+            let file = e.target.files[0];
+            let reader = new FileReader();
+            reader.onloadend = () => {
+                this.taskData.task_file = reader.result;
+            }
+            reader.readAsDataURL(file);
         },
         showSubTasks(task) {
             this.subEditMode = false
