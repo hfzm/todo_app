@@ -112,7 +112,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" v-show="!deleteMode">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="task_file">Task File</label>

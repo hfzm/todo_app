@@ -43,11 +43,25 @@ class TaskController extends Controller
 
     public function updateTask(Request $request, $id)
     {
+        $task = Task::findOrFail($id);
+
+        if($request->task_file) {
+            if($task->task_file) {
+                unlink(public_path('images/tasks/' . $task->task_file));
+            }
+            $task_file = time() . '.' . explode('/', explode(':', substr($request->task_file, 0, strpos($request->task_file, ';')))[1])[1];
+
+            Image::make($request->task_file)->save(public_path('images/tasks/' . $task_file));
+        }else{
+            $task_file = $task->task_file;
+        }
+
         Task::where('id', $id)->update([
             'title'         => $request->title,
             'date'          => $request->date,
             'time'          => $request->time,
             'detail'        => $request->detail,
+            'task_file'     => $task_file,
         ]);
 
         return response()->json('Task updated successfully!');
@@ -55,6 +69,8 @@ class TaskController extends Controller
     
     public function deleteTask($id)
     {
+        $task = Task::findOrFail($id);
+        unlink(public_path('images/tasks/' . $task->task_file));
         Task::where('id', $id)->delete();
         return response()->json('Task deleted successfully!');
     }
