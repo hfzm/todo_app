@@ -30,12 +30,23 @@ class TaskController extends Controller
             $task_file = null;
         }
 
+        if($request->other_file) {
+            $upload_path = public_path('uploads');
+            $extension = $request->other_file->getClientOriginalExtension();
+            $other_file = time() . '.' . $extension;
+
+            $request->other_file->move($upload_path, $other_file);
+        }else{
+            $other_file = null;
+        }
+
         Task::create([
             'title'         => $request->title,
             'date'          => $request->date,
             'time'          => $request->time,
             'detail'        => $request->detail,
             'task_file'     => $task_file,
+            'other_file'    => $other_file,
         ]);
 
         return response()->json('Task stored successfully!');

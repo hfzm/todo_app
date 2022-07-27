@@ -28,6 +28,7 @@
                                     <th>Date & Time</th>
                                     <th>Detail</th>
                                     <th>Task File</th>
+                                    <th>Other File</th>
                                     <th>Sub Tasks Count</th>
                                     <th>Sub Tasks</th>
                                     <th v-if="roles.has('admin') || roles.has('manager')">Actions</th>
@@ -46,6 +47,14 @@
                                             <img :src="`${url}${task.task_file}`" alt="task_file" width="100">
                                         </a>
                                         <p v-show="!task.task_file">
+                                            ...
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-dark" :href="url2+task.other_file" v-show="task.other_file" target="_blank">
+                                            Download
+                                        </a>
+                                        <p v-show="!task.other_file">
                                             ...
                                         </p>
                                     </td>
@@ -117,6 +126,15 @@
                     <div class="form-group">
                         <label for="task_file">Task File</label>
                         <input type="file" id="task_file" class="form-control" @change="selectedTaskFile">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" v-show="!deleteMode">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="other_file">Other File</label>
+                        <input type="file" id="other_file" class="form-control" @change="selectedOtherFile">
                     </div>
                 </div>
             </div>
@@ -252,6 +270,7 @@ export default {
     data() {
         return {
             url: window.url + 'images/tasks/',
+            url2: window.url + 'uploads/',
             editMode: false,
             subEditMode: false,
             deleteMode: false,
@@ -262,6 +281,7 @@ export default {
                 time: '',
                 detail: '',
                 task_file: '',
+                other_file: '',
             },
             taskErrors: {
                 title: false,
@@ -378,7 +398,21 @@ export default {
             this.taskData.time == '' ? this.taskErrors.time = true : this.taskErrors.time = false
 
             if(this.taskData.title && this.taskData.date && this.taskData.time) {
-                axios.post(window.url + 'api/storeTask', this.taskData).then(response => {
+
+                const config = {
+                    headers: {'content-type': 'multipart/form-data'}
+                }
+
+                let formData = new FormData();
+
+                formData.append('title', this.taskData.title);
+                formData.append('date', this.taskData.date);
+                formData.append('time', this.taskData.time);
+                formData.append('detail', this.taskData.detail);
+                formData.append('task_file', this.taskData.task_file);
+                formData.append('other_file', this.taskData.other_file);
+
+                axios.post(window.url + 'api/storeTask', formData, config).then(response => {
                     this.getTasks()
                     console.log(response.data);
                 }).catch(errors => {
@@ -387,6 +421,11 @@ export default {
                     $('#taskModal').modal('hide')
                 });
             }
+        },
+        selectedOtherFile(e) {
+            console.log(e.target.files[0])
+            this.taskData.other_file = e.target.files[0]
+            console.log(this.taskData.other_file)
         },
         selectedTaskFile(e) {
             let file = e.target.files[0];

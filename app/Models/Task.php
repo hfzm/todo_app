@@ -15,6 +15,7 @@ class Task extends Model
         'time',
         'detail',
         'task_file',
+        'other_file',
     ];
 
     public function sub_tasks()
