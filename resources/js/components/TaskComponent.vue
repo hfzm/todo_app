@@ -345,7 +345,20 @@ export default {
             this.taskData.time == '' ? this.taskErrors.time = true : this.taskErrors.time = false
 
             if(this.taskData.title && this.taskData.date && this.taskData.time) {
-                axios.post(window.url + 'api/updateTask/' + this.taskData.id, this.taskData).then(response => {
+                const config = {
+                    headers: {'content-type': 'multipart/form-data'}
+                }
+
+                let formData = new FormData();
+
+                formData.append('title', this.taskData.title);
+                formData.append('date', this.taskData.date);
+                formData.append('time', this.taskData.time);
+                formData.append('detail', this.taskData.detail);
+                formData.append('task_file', this.taskData.task_file);
+                formData.append('other_file', this.taskData.other_file);
+
+                axios.post(window.url + 'api/updateTask/' + this.taskData.id, formData, config).then(response => {
                     this.getTasks()
                 }).catch(errors => {
                     console.log(errors)
@@ -363,7 +376,13 @@ export default {
                 date: task.date,
                 time: task.time,
                 detail: task.detail,
+                task_file: '',
+                other_file: '',
             }
+
+            document.querySelector('#task_file').value = '';
+            document.querySelector('#other_file').value = '';
+
             this.taskErrors = {
                 title: false,
                 date: false,
@@ -381,9 +400,11 @@ export default {
                 time: '',
                 detail: '',
                 task_file: '',
+                other_file: '',
             }
 
             document.querySelector('#task_file').value = '';
+            document.querySelector('#other_file').value = '';
 
             this.taskErrors = {
                 title: false,

@@ -67,12 +67,27 @@ class TaskController extends Controller
             $task_file = $task->task_file;
         }
 
+        if($request->other_file) {
+            if($task->other_file) {
+                unlink(public_path('uploads/' . $task->other_file));
+            }
+
+            $upload_path = public_path('uploads');
+            $extension = $request->other_file->getClientOriginalExtension();
+            $other_file = time() . '.' . $extension;
+
+            $request->other_file->move($upload_path, $other_file);
+        }else{
+            $other_file = $task->other_file;
+        }
+
         Task::where('id', $id)->update([
             'title'         => $request->title,
             'date'          => $request->date,
             'time'          => $request->time,
             'detail'        => $request->detail,
             'task_file'     => $task_file,
+            'other_file'    => $other_file,
         ]);
 
         return response()->json('Task updated successfully!');
@@ -81,7 +96,12 @@ class TaskController extends Controller
     public function deleteTask($id)
     {
         $task = Task::findOrFail($id);
-        unlink(public_path('images/tasks/' . $task->task_file));
+        if($task->task_file) {
+            unlink(public_path('images/tasks/' . $task->task_file));
+        }
+        if($task->other_file) {
+            unlink(public_path('uploads/' . $task->other_file));
+        }
         Task::where('id', $id)->delete();
         return response()->json('Task deleted successfully!');
     }
